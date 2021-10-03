@@ -1,8 +1,11 @@
+#  Dependencies
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, select, func
+from sqlalchemy.orm import relationship, column_property
 
+# User created dependencies
 from app.db import Base
+from .Vote import Vote
 
 
 class Post(Base):
@@ -14,5 +17,11 @@ class Post(Base):
     created_at = Column(DateTime, default=datetime.now)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now)
 
+    # creates relationships
     user = relationship("User")
     comments = relationship("Comment", cascade="all,delete")
+    votes = relationship("Vote", cascade="all, delete")
+
+    # this dynamic property will perform a SELECT together with the SQLAlchemy "func.count()" method to add up all of the votes
+    vote_count = column_property(
+        select([func.count(Vote.id)]).where(Vote.post_id == id))
