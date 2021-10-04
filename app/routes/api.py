@@ -1,7 +1,5 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 import sys
-
-from sqlalchemy.orm import session
 
 from app.models import User
 from app.db import get_db
