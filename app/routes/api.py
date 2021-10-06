@@ -147,6 +147,7 @@ def create():
 def update(id):
     data = request.get_json()
     db = get_db()
+
     try:
         # get post and update the title
         post = db.query(Post).filter(Post.id == id).one()
@@ -161,7 +162,7 @@ def update(id):
 
 
 # route for deleting posts
-@bp.route("/posts/<id>", method=["DELETE"])
+@bp.route("/posts/<id>", methods=["DELETE"])
 def delete(id):
     db = get_db()
 
