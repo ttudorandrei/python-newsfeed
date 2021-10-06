@@ -6,9 +6,8 @@ from app.db import get_db
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 
+
 # route for signing up
-
-
 @bp.route("/users", methods=["POST"])
 def signup():
     data = request.get_json()
@@ -37,9 +36,8 @@ def signup():
 
     return jsonify(id=newUser.id)
 
+
 # route for logging out
-
-
 @bp.route("/users/logout", methods=["POST"])
 def logout():
     # remove session variables
@@ -117,6 +115,7 @@ def upvote():
 
     return "", 204
 
+
 # route to create new post
 @bp.route("/posts", methods=["POST"])
 def create():
@@ -141,3 +140,39 @@ def create():
         return jsonify(message="post failed"), 500
 
     return jsonify(id=newPost.id)
+
+
+# route for updating posts
+@bp.route("/posts/<id>", methods=["PUT"])
+def update(id):
+    data = request.get_json()
+    db = get_db()
+    try:
+        # get post and update the title
+        post = db.query(Post).filter(Post.id == id).one()
+        post.title = data["title"]
+        db.commit()
+    except:
+        print(sys.exc_info()[0])
+
+        db.rollback()
+        return jsonify(message="Post not found"), 404
+    return "", 404
+
+
+# route for deleting posts
+@bp.route("/posts/<id>", method=["DELETE"])
+def delete(id):
+    db = get_db()
+
+    try:
+        # delete targeted post from db
+        db.delete(db.query(Post).filter(Post.id == id).one())
+        db.commit()
+    except:
+        print(sys.exc_info()[0])
+
+        db.rollback()
+        return jsonify(message="Post not found"), 404
+
+    return "", 204
